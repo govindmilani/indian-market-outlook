@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,19 +6,50 @@
     <title>India 2026: Strategic Market Outlook</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chosen Palette: Warm Neutrals (Stone/Warm Gray) as base, with Professional Accents: Teal (Growth/Stability), Indigo (Tech/Future), and Amber (Infrastructure/Capex). -->
+    
+    <!-- Application Structure Plan: 
+         1. Hero Section: Immediate high-level summary (GDP, Deficit, Capex) to set the "Goldilocks" context.
+         2. Macro Dashboard: Interactive visualization of the "Capex Pivot" (Govt Spending vs Fiscal Deficit) + AI Risk Simulator (Gemini) to test economic shocks.
+         3. Valuation Lab: Comparative analysis of Market Cap/GDP (Overheated?) vs Smallcap PE (Attractive?), highlighting the K-Shaped opportunity.
+         4. Thematic Deep Dive: Tabbed interface for the 3 core structural themes (Electronics, Biopharma, Infra) to reduce cognitive load.
+         5. Portfolio Architect: Functional SIP calculator implementing the "Core-Satellite" strategy with dynamic visualization + AI Investment Memo (Gemini).
+         6. Footer: Critical risk factors (Oil, Monsoon) and sources.
+    -->
+
+    <!-- Visualization & Content Choices:
+         - Macro Chart (Mixed Bar/Line): Best for showing divergent trends (Capex going UP, Deficit going DOWN). 
+         - Valuation Chart (Line/Area): To show the historical correction in Smallcap PE, emphasizing the "entry point".
+         - Portfolio Chart (Doughnut): Standard for asset allocation; interactive to show rupee values based on user input.
+         - Interaction: Tab switching for themes (avoids long scroll), Input fields for Portfolio/Risk (personalization).
+         - Libraries: Chart.js for all visuals (Canvas based, responsive). Tailwind for layout.
+    -->
+    
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
     <style>
         body { font-family: 'Inter', sans-serif; }
+        
+        /* Chart Container Styling - Strictly following requirements */
         .chart-container {
             position: relative;
             width: 100%;
-            max-width: 600px;
+            max-width: 600px; /* Constraint for large screens */
             margin-left: auto;
-            margin-right: auto;
-            height: 350px;
-            max-height: 400px;
+            margin-right: auto; /* Centering */
+            height: 350px; /* Base height */
+            max-height: 400px; /* Max height to prevent overflow */
         }
+
+        /* Responsive adjustments for charts */
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 380px;
+            }
+        }
+
         .active-tab {
             background-color: #0f766e; /* teal-700 */
             color: white;
@@ -32,22 +63,660 @@
         .card-hover:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-        /* Custom scrollbar for data tables if needed */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f5f5f4;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #a8a29e;
-            border-radius: 4px;
+            transition: all 0.3s ease;
         }
         .typing-cursor::after {
             content: '|';
             animation: blink 1s step-start infinite;
         }
         @keyframes blink { 50% { opacity: 0; } }
-   </body>
-</html><
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800 antialiased">
+
+    <!-- Navigation -->
+    <nav class="bg-stone-900 text-white sticky top-0 z-50 shadow-lg border-b border-stone-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">🇮🇳</span>
+                    <div>
+                        <span class="text-xl font-bold tracking-tight text-teal-400 block leading-none">INDIA 2026</span>
+                        <span class="text-xs text-stone-400 font-light tracking-widest uppercase">Strategic Outlook</span>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center space-x-1">
+                    <button onclick="scrollToSection('macro')" class="hover:bg-stone-800 px-3 py-2 rounded-md text-sm font-medium transition text-stone-300 hover:text-white">Macro</button>
+                    <button onclick="scrollToSection('fundamentals')" class="hover:bg-stone-800 px-3 py-2 rounded-md text-sm font-medium transition text-stone-300 hover:text-white">Valuation</button>
+                    <button onclick="scrollToSection('themes')" class="hover:bg-stone-800 px-3 py-2 rounded-md text-sm font-medium transition text-stone-300 hover:text-white">Themes</button>
+                    <button onclick="scrollToSection('portfolio')" class="bg-teal-700 hover:bg-teal-600 px-4 py-2 rounded-md text-sm font-bold transition shadow ml-4">Portfolio Sim</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="bg-white border-b border-stone-200 relative overflow-hidden">
+        <div class="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
+            <span class="text-9xl">📈</span>
+        </div>
+        <div class="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <h1 class="text-4xl font-extrabold text-stone-900 sm:text-5xl sm:tracking-tight lg:text-6xl mb-4">
+                The <span class="text-teal-700">Capex Pivot</span>
+            </h1>
+            <p class="max-w-2xl mx-auto text-xl text-stone-500 mb-8">
+                Transitioning from a liquidity-fueled recovery to structural, earnings-driven growth in a "Goldilocks" economy.
+            </p>
+            
+            <!-- Key Stats Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
+                <div class="bg-teal-50 border border-teal-100 p-4 rounded-xl shadow-sm">
+                    <div class="text-3xl font-bold text-teal-800">7.4%</div>
+                    <div class="text-xs uppercase tracking-wide text-teal-600 font-semibold mt-1">Real GDP (FY26)</div>
+                </div>
+                <div class="bg-indigo-50 border border-indigo-100 p-4 rounded-xl shadow-sm">
+                    <div class="text-3xl font-bold text-indigo-800">4.3%</div>
+                    <div class="text-xs uppercase tracking-wide text-indigo-600 font-semibold mt-1">Fiscal Deficit Target</div>
+                </div>
+                <div class="bg-amber-50 border border-amber-100 p-4 rounded-xl shadow-sm">
+                    <div class="text-3xl font-bold text-amber-800">₹12.2L Cr</div>
+                    <div class="text-xs uppercase tracking-wide text-amber-600 font-semibold mt-1">Record Capex Outlay</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Section 1: Macro Dashboard -->
+    <section id="macro" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-stone-900">The Macro Lens: "Investment-Led Growth"</h2>
+            <p class="mt-4 text-lg text-stone-600 max-w-3xl mx-auto">
+                India has decoupled from global stagnation. The government is successfully "crowding in" private investment while adhering to fiscal consolidation—a rare feat.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+            <!-- Macro Chart Card -->
+            <div class="bg-white p-6 rounded-2xl shadow-md border border-stone-100 flex flex-col">
+                <div class="mb-4">
+                    <h3 class="text-lg font-bold text-stone-800">Growth vs. Consolidation</h3>
+                    <p class="text-sm text-stone-500">Capex has surged while the Deficit is tamed.</p>
+                </div>
+                <div class="flex-grow flex items-center justify-center">
+                    <div class="chart-container">
+                        <canvas id="macroChart"></canvas>
+                    </div>
+                </div>
+                <p class="text-xs text-stone-400 mt-4 text-center">Data Source: Union Budget & Economic Survey 2025-26</p>
+            </div>
+
+            <!-- Context & AI Simulator -->
+            <div class="flex flex-col gap-6">
+                <!-- Policy Context -->
+                <div class="bg-stone-100 p-6 rounded-2xl border-l-4 border-indigo-600">
+                    <h3 class="font-bold text-indigo-900 text-lg mb-2">Policy Stance: "Higher-for-Longer"</h3>
+                    <p class="text-stone-700 text-sm mb-4">
+                        RBI Repo Rate remains at <strong>5.25%</strong>. The central bank prioritizes price stability. With the US Fed pausing cuts, India's rates will stay elevated, benefiting "Quality" companies with low debt.
+                    </p>
+                    <div class="flex justify-between items-center text-xs font-mono text-stone-500 pt-3 border-t border-stone-200">
+                        <span>10Y Bond Yield: 6.71%</span>
+                        <span>CPI Forecast: 4.0-4.2%</span>
+                    </div>
+                </div>
+
+                <!-- AI Risk Simulator -->
+                <div class="bg-white p-6 rounded-2xl shadow-md border border-stone-200 flex-grow relative overflow-hidden group">
+                    <!-- Decor -->
+                    <div class="absolute -right-6 -top-6 w-24 h-24 bg-rose-50 rounded-full z-0"></div>
+                    
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-stone-900 flex items-center gap-2">
+                                <span class="text-xl">⚡</span> AI Risk Simulator
+                            </h3>
+                            <span class="bg-stone-100 text-stone-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider border border-stone-200">Gemini Powered</span>
+                        </div>
+                        <p class="text-sm text-stone-600 mb-4">
+                            The global environment is fragile (Oil, Geopolitics). Type a scenario to test its impact on India 2026.
+                        </p>
+                        
+                        <div class="flex gap-2 mb-4">
+                            <input type="text" id="riskInput" placeholder="E.g., Oil hits $95 due to Iran tension..." 
+                                class="w-full bg-stone-50 border border-stone-300 text-stone-900 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 block p-2.5">
+                            <button onclick="simulateRisk()" id="riskBtn" class="text-white bg-stone-800 hover:bg-stone-900 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition">
+                                Analyze
+                            </button>
+                        </div>
+
+                        <div id="riskResult" class="hidden p-4 bg-rose-50 rounded-lg border border-rose-100 text-sm text-rose-800">
+                            <!-- AI Output -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 2: Fundamentals & Valuation -->
+    <section id="fundamentals" class="bg-stone-200 py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-stone-900">Fundamentals: The K-Shaped Recovery</h2>
+                <p class="mt-4 text-lg text-stone-600 max-w-3xl mx-auto">
+                    Corporate Balance Sheets are pristine. However, a dichotomy exists: Large Caps are expensive, while Small Caps offer a historic entry point after correction.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                <!-- Market Cap Gauge (Buffett Indicator) -->
+                <div class="md:col-span-4 bg-white p-6 rounded-2xl shadow-sm text-center flex flex-col justify-center">
+                    <h3 class="text-stone-500 font-semibold text-sm uppercase tracking-wider mb-4">Buffett Indicator</h3>
+                    <div class="relative w-48 h-48 mx-auto flex items-center justify-center">
+                        <!-- CSS Donut approximation for gauge -->
+                        <div class="w-full h-full rounded-full border-[16px] border-stone-100 absolute top-0 left-0"></div>
+                        <div class="w-full h-full rounded-full border-[16px] border-amber-500 absolute top-0 left-0 border-t-transparent border-l-transparent border-r-transparent transform -rotate-45" style="border-bottom-color: #f59e0b;"></div>
+                        <div class="z-10 text-center">
+                            <div class="text-4xl font-extrabold text-stone-800">111.6%</div>
+                            <div class="text-xs text-stone-400 mt-1">Mkt Cap / GDP</div>
+                        </div>
+                    </div>
+                    <p class="mt-4 text-sm text-stone-600 px-4">
+                        <span class="font-bold text-amber-600">Status: Elevated.</span> Justified by rising corporate profits and formalization, but warrants caution in Large Caps.
+                    </p>
+                </div>
+
+                <!-- Valuation Chart -->
+                <div class="md:col-span-8 bg-white p-6 rounded-2xl shadow-sm">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-stone-800 text-lg">The Opportunity: Small Cap PE Ratio</h3>
+                        <span class="bg-teal-100 text-teal-800 text-xs font-bold px-2 py-1 rounded">Buy Zone</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="valuationChart"></canvas>
+                    </div>
+                    <div class="mt-4 grid grid-cols-2 gap-4 text-sm">
+                        <div class="bg-green-50 p-3 rounded border border-green-100">
+                            <strong class="text-green-800 block">Current PE: ~26.2x</strong>
+                            <span class="text-green-700">Near 3-year lows. PEG Ratio ~1.3 is attractive.</span>
+                        </div>
+                        <div class="bg-red-50 p-3 rounded border border-red-100">
+                            <strong class="text-red-800 block">Peak PE: 48.2x</strong>
+                            <span class="text-red-700">Froth has been purged from the system.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: Strategic Themes -->
+    <section id="themes" class="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-10">
+            <h2 class="text-3xl font-bold text-stone-900">Structural Themes (2026-2029)</h2>
+            <p class="mt-4 text-stone-600">
+                Alpha will come from sectors benefiting from specific policy tailwinds (PLI, ISM, Budget).
+            </p>
+        </div>
+
+        <!-- Interactive Tabs -->
+        <div class="flex flex-col sm:flex-row justify-center mb-8 border-b border-stone-200">
+            <button onclick="switchTheme('electronics')" id="tab-electronics" class="active-tab px-8 py-4 font-semibold text-lg focus:outline-none transition-colors duration-200">
+                Electronics (ISM 2.0)
+            </button>
+            <button onclick="switchTheme('biopharma')" id="tab-biopharma" class="inactive-tab px-8 py-4 font-semibold text-lg focus:outline-none transition-colors duration-200">
+                Biopharma SHAKTI
+            </button>
+            <button onclick="switchTheme('infra')" id="tab-infra" class="inactive-tab px-8 py-4 font-semibold text-lg focus:outline-none transition-colors duration-200">
+                Infra Supercycle
+            </button>
+        </div>
+
+        <!-- Dynamic Content Card -->
+        <div id="theme-content" class="bg-white p-8 rounded-3xl shadow-xl border border-stone-100 min-h-[320px] transition-opacity duration-300">
+            <!-- Content injected via JS -->
+        </div>
+    </section>
+
+    <!-- Section 4: Portfolio Strategy -->
+    <section id="portfolio" class="bg-stone-900 text-stone-100 py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                
+                <!-- Strategy & Controls -->
+                <div class="lg:col-span-5 space-y-8">
+                    <div>
+                        <h2 class="text-3xl font-bold text-teal-400 mb-2">Portfolio Architect</h2>
+                        <p class="text-stone-400">
+                            The era of "rising tides" is over. Adopt a <strong>Core-Satellite</strong> strategy: 50% for Stability, 30% for Alpha.
+                        </p>
+                    </div>
+
+                    <div class="bg-stone-800 p-6 rounded-2xl border border-stone-700">
+                        <label class="block text-xs font-bold text-stone-400 uppercase tracking-wider mb-2">Monthly SIP Amount (₹)</label>
+                        <input type="number" id="sipAmount" value="50000" class="w-full bg-stone-900 text-white text-2xl font-mono px-4 py-3 rounded-lg border border-stone-600 focus:ring-2 focus:ring-teal-500 focus:outline-none mb-6" oninput="calculatePortfolio()">
+                        
+                        <!-- Allocation Legend -->
+                        <div class="space-y-3 text-sm">
+                            <div class="flex items-center justify-between p-2 rounded hover:bg-stone-700 transition">
+                                <div class="flex items-center"><div class="w-3 h-3 rounded-full bg-teal-500 mr-3"></div>Core (Large/Flexi)</div>
+                                <span class="font-mono font-bold">50%</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2 rounded hover:bg-stone-700 transition">
+                                <div class="flex items-center"><div class="w-3 h-3 rounded-full bg-amber-500 mr-3"></div>Satellite (Small Cap)</div>
+                                <span class="font-mono font-bold">30%</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2 rounded hover:bg-stone-700 transition">
+                                <div class="flex items-center"><div class="w-3 h-3 rounded-full bg-indigo-500 mr-3"></div>Thematic (Infra)</div>
+                                <span class="font-mono font-bold">10%</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2 rounded hover:bg-stone-700 transition">
+                                <div class="flex items-center"><div class="w-3 h-3 rounded-full bg-rose-500 mr-3"></div>Dynamic (BAF)</div>
+                                <span class="font-mono font-bold">10%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Memo Button -->
+                    <div class="relative">
+                        <button onclick="generateMemo()" id="memoBtn" class="w-full bg-gradient-to-r from-teal-700 to-teal-600 hover:from-teal-600 hover:to-teal-500 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition transform active:scale-95 flex items-center justify-center gap-2">
+                            <span>✨</span> Generate Investment Memo
+                        </button>
+                        <div id="memoResult" class="hidden mt-4 bg-stone-800/50 p-4 rounded-xl border border-teal-500/30 text-teal-100 italic text-sm leading-relaxed"></div>
+                    </div>
+                </div>
+
+                <!-- Visual Output -->
+                <div class="lg:col-span-7 bg-stone-800 rounded-3xl p-8 shadow-2xl flex flex-col">
+                    <div class="flex-grow relative">
+                        <div class="chart-container">
+                            <canvas id="portfolioChart"></canvas>
+                        </div>
+                        <!-- Centered Text in Donut -->
+                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <div class="text-center">
+                                <div class="text-stone-500 text-xs uppercase">Total SIP</div>
+                                <div class="text-2xl font-bold text-white" id="totalDisplay">₹50k</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Breakdown Table -->
+                    <div class="mt-8 overflow-x-auto">
+                        <table class="w-full text-sm text-left text-stone-400">
+                            <thead class="text-xs text-stone-500 uppercase bg-stone-900/50 border-b border-stone-700">
+                                <tr>
+                                    <th class="px-4 py-3">Fund Category</th>
+                                    <th class="px-4 py-3 text-right">Allocation</th>
+                                    <th class="px-4 py-3">Rationale</th>
+                                </tr>
+                            </thead>
+                            <tbody id="allocationTableBody" class="divide-y divide-stone-700">
+                                <!-- JS Populated -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-stone-950 text-stone-600 py-12 border-t border-stone-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h4 class="text-stone-300 font-bold mb-4 flex items-center gap-2">⚠️ Critical Risks</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-start"><span class="mr-2">🛢️</span> <span><strong>Oil Shock:</strong> Brent >$90/bbl (Iran tension) would spike inflation.</span></li>
+                        <li class="flex items-start"><span class="mr-2">🌧️</span> <span><strong>Monsoon:</strong> Sub-par rains impact rural demand recovery.</span></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-stone-300 font-bold mb-4">Final Verdict</h4>
+                    <p class="text-sm">
+                        <strong>Overweight Equities</strong> (4-year view). Focus on Domestic Cyclicals (Banks, Infra) over Global Cyclicals. Use systematic accumulation to mitigate volatility.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-stone-300 font-bold mb-4">Source</h4>
+                    <p class="text-xs leading-relaxed">
+                        Synthesized from "Strategic Market Outlook 2026: The Capex Pivot and the Maturation of the Indian Bull Market" and "Indian Equity Market Outlook - Govind". Data cut-off: Feb 2026.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- Configuration ---
+        const apiKey = ""; // Set your Gemini API Key here
+
+        // --- Data ---
+        const themeContent = {
+            electronics: {
+                title: "Electronics Manufacturing (ISM 2.0)",
+                icon: "📱",
+                bg: "bg-teal-50",
+                border: "border-teal-200",
+                text: "text-teal-900",
+                html: `
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div>
+                            <div class="inline-flex items-center px-3 py-1 rounded-full bg-teal-100 text-teal-800 text-xs font-bold mb-4">Manufacturing Pivot</div>
+                            <h3 class="text-2xl font-bold text-stone-800 mb-4">From "Assembly" to "Value Creation"</h3>
+                            <p class="text-stone-600 mb-4">While PLI 1.0 focused on assembly, <strong>ISM 2.0</strong> (₹40,000 cr outlay) targets components, PCBs, and semiconductor packaging (OSAT). Backward integration is the key value driver.</p>
+                            <div class="p-4 bg-teal-100 rounded-lg border-l-4 border-teal-600">
+                                <span class="font-bold text-teal-800 block text-xs uppercase mb-1">Thesis</span>
+                                <span class="text-teal-900 text-sm">Global supply chains are shifting away from China. India is the prime beneficiary for "China+1".</span>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-xl border border-stone-200 p-6 shadow-sm">
+                            <h4 class="font-bold text-stone-700 mb-3 border-b pb-2">Top Beneficiaries</h4>
+                            <ul class="space-y-3 text-sm text-stone-600">
+                                <li class="flex items-center"><span class="text-teal-500 mr-2">●</span> <strong>EMS Players:</strong> Dixon, Kaynes, Amber.</li>
+                                <li class="flex items-center"><span class="text-teal-500 mr-2">●</span> <strong>Supply Chain:</strong> Chemical suppliers for Fabs.</li>
+                                <li class="flex items-center"><span class="text-teal-500 mr-2">●</span> <strong>Infra:</strong> Industrial Real Estate in Gujarat/TN.</li>
+                            </ul>
+                        </div>
+                    </div>`
+            },
+            biopharma: {
+                title: "Biopharma Renaissance (SHAKTI)",
+                icon: "🧬",
+                bg: "bg-indigo-50",
+                border: "border-indigo-200",
+                text: "text-indigo-900",
+                html: `
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div>
+                            <div class="inline-flex items-center px-3 py-1 rounded-full bg-indigo-100 text-indigo-800 text-xs font-bold mb-4">Healthcare Pivot</div>
+                            <h3 class="text-2xl font-bold text-stone-800 mb-4">From "Generic Pharmacy" to "Biologics Hub"</h3>
+                            <p class="text-stone-600 mb-4">The <strong>Biopharma SHAKTI</strong> scheme (₹10,000 cr) funds high-risk clinical trials and R&D. This de-risks the transition to high-margin Biologics and Biosimilars.</p>
+                            <div class="p-4 bg-indigo-100 rounded-lg border-l-4 border-indigo-600">
+                                <span class="font-bold text-indigo-800 block text-xs uppercase mb-1">Thesis</span>
+                                <span class="text-indigo-900 text-sm">Biologics offer higher barriers to entry and superior margins compared to commoditized generics.</span>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-xl border border-stone-200 p-6 shadow-sm">
+                            <h4 class="font-bold text-stone-700 mb-3 border-b pb-2">Top Beneficiaries</h4>
+                            <ul class="space-y-3 text-sm text-stone-600">
+                                <li class="flex items-center"><span class="text-indigo-500 mr-2">●</span> <strong>Innovators:</strong> Biocon, Syngene (CDMO).</li>
+                                <li class="flex items-center"><span class="text-indigo-500 mr-2">●</span> <strong>Integrated:</strong> Sun Pharma (Specialty portfolio).</li>
+                                <li class="flex items-center"><span class="text-indigo-500 mr-2">●</span> <strong>Defensive Growth:</strong> Inelastic demand + Margin expansion.</li>
+                            </ul>
+                        </div>
+                    </div>`
+            },
+            infra: {
+                title: "Capital Goods Supercycle",
+                icon: "🏗️",
+                bg: "bg-amber-50",
+                border: "border-amber-200",
+                text: "text-amber-900",
+                html: `
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div>
+                            <div class="inline-flex items-center px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-bold mb-4">Capex Pivot</div>
+                            <h3 class="text-2xl font-bold text-stone-800 mb-4">The Investment Multiplier</h3>
+                            <p class="text-stone-600 mb-4">With a record <strong>₹12.2 Lakh Crore</strong> outlay, the government is building roads, railways, and defense corridors. This creates 3-5 years of order book visibility.</p>
+                            <div class="p-4 bg-amber-100 rounded-lg border-l-4 border-amber-600">
+                                <span class="font-bold text-amber-800 block text-xs uppercase mb-1">Thesis</span>
+                                <span class="text-amber-900 text-sm">Focus on Tier-2/3 city development expands the addressable market for construction materials beyond metros.</span>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-xl border border-stone-200 p-6 shadow-sm">
+                            <h4 class="font-bold text-stone-700 mb-3 border-b pb-2">Top Beneficiaries</h4>
+                            <ul class="space-y-3 text-sm text-stone-600">
+                                <li class="flex items-center"><span class="text-amber-500 mr-2">●</span> <strong>Execution:</strong> L&T (EPC).</li>
+                                <li class="flex items-center"><span class="text-amber-500 mr-2">●</span> <strong>Materials:</strong> UltraTech Cement.</li>
+                                <li class="flex items-center"><span class="text-amber-500 mr-2">●</span> <strong>Power:</strong> NTPC, Power Grid (Energy security).</li>
+                            </ul>
+                        </div>
+                    </div>`
+            }
+        };
+
+        const portfolioModel = [
+            { category: "Flexi Cap (Growth)", allocation: 0.30, name: "HDFC Flexi Cap", rationale: "Banking heavy; captures credit growth." },
+            { category: "Flexi Cap (Value)", allocation: 0.20, name: "Parag Parikh Flexi", rationale: "Defensive anchor; global diversification." },
+            { category: "Large Cap", allocation: 0.20, name: "Nippon India Large", rationale: "GARP; Stability of market leaders." },
+            { category: "Small Cap", allocation: 0.20, name: "Bandhan Small Cap", rationale: "High Alpha; Mfg & ISM 2.0 themes." },
+            { category: "Balanced Adv.", allocation: 0.10, name: "ICICI Pru BAF", rationale: "Dynamic Asset Alloc; Volatility control." }
+        ];
+
+        // --- Logic ---
+
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function switchTheme(key) {
+            const contentDiv = document.getElementById('theme-content');
+            const data = themeContent[key];
+            
+            // Update Buttons
+            ['electronics', 'biopharma', 'infra'].forEach(k => {
+                const btn = document.getElementById(`tab-${k}`);
+                if (k === key) {
+                    btn.className = `active-tab px-8 py-4 font-semibold text-lg focus:outline-none transition-colors duration-200`;
+                } else {
+                    btn.className = `inactive-tab px-8 py-4 font-semibold text-lg focus:outline-none transition-colors duration-200 hover:bg-stone-200`;
+                }
+            });
+
+            // Update Content
+            contentDiv.style.opacity = '0';
+            setTimeout(() => {
+                contentDiv.innerHTML = data.html;
+                contentDiv.style.opacity = '1';
+            }, 300);
+        }
+
+        let portfolioChart = null;
+
+        function calculatePortfolio() {
+            const input = document.getElementById('sipAmount');
+            let val = parseFloat(input.value);
+            if (isNaN(val) || val < 0) val = 0;
+            
+            document.getElementById('totalDisplay').innerText = `₹${(val/1000).toFixed(1)}k`;
+
+            const tbody = document.getElementById('allocationTableBody');
+            tbody.innerHTML = '';
+            
+            const chartData = [];
+            const labels = [];
+            const colors = ['#14b8a6', '#0d9488', '#6366f1', '#f59e0b', '#f43f5e'];
+
+            portfolioModel.forEach((item, idx) => {
+                const amt = Math.round(val * item.allocation);
+                chartData.push(amt);
+                labels.push(item.category);
+
+                const row = `
+                    <tr class="hover:bg-stone-800/50 transition">
+                        <td class="px-4 py-3 font-medium text-stone-300 flex items-center">
+                            <span class="w-2 h-2 rounded-full mr-2" style="background-color: ${colors[idx]}"></span>
+                            ${item.category}
+                        </td>
+                        <td class="px-4 py-3 text-right text-white font-mono">₹${amt.toLocaleString()}</td>
+                        <td class="px-4 py-3 text-stone-500 text-xs">${item.rationale}</td>
+                    </tr>
+                `;
+                tbody.insertAdjacentHTML('beforeend', row);
+            });
+
+            updateChart(labels, chartData, colors);
+        }
+
+        function updateChart(labels, data, colors) {
+            if (portfolioChart) {
+                portfolioChart.data.datasets[0].data = data;
+                portfolioChart.update();
+            } else {
+                const ctx = document.getElementById('portfolioChart').getContext('2d');
+                portfolioChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: data,
+                            backgroundColor: colors,
+                            borderWidth: 0,
+                            hoverOffset: 10
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return ' ₹' + context.raw.toLocaleString();
+                                    }
+                                }
+                            }
+                        },
+                        cutout: '70%'
+                    }
+                });
+            }
+        }
+
+        // --- Gemini Integration ---
+        
+        async function callGemini(prompt) {
+            if (!apiKey) return "Please configure your API Key in the code.";
+            
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            const payload = { contents: [{ parts: [{ text: prompt }] }] };
+
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                return data.candidates?.[0]?.content?.parts?.[0]?.text || "No analysis available.";
+            } catch (e) {
+                return "Error connecting to AI. Please try again.";
+            }
+        }
+
+        async function simulateRisk() {
+            const input = document.getElementById('riskInput').value;
+            const resDiv = document.getElementById('riskResult');
+            const btn = document.getElementById('riskBtn');
+            
+            if (!input) return;
+            
+            btn.innerText = "Analyzing...";
+            btn.disabled = true;
+            resDiv.classList.remove('hidden');
+            resDiv.innerHTML = '<span class="typing-cursor">Consulting Gemini...</span>';
+
+            const prompt = `Act as an Indian Market Strategist for 2026. 
+            Context: GDP 7.4%, Deficit 4.3%, Strong Capex.
+            Scenario: "${input}"
+            Analyze the impact on Indian Equities (Banks, Infra, IT) and INR in 1-2 sentences. Be specific.`;
+            
+            const text = await callGemini(prompt);
+            
+            resDiv.innerHTML = `<strong>Analysis:</strong> ${text}`;
+            btn.innerText = "Analyze";
+            btn.disabled = false;
+        }
+
+        async function generateMemo() {
+            const amt = document.getElementById('sipAmount').value;
+            const resDiv = document.getElementById('memoResult');
+            const btn = document.getElementById('memoBtn');
+
+            btn.innerHTML = 'Drafting... <span class="typing-cursor">|</span>';
+            btn.disabled = true;
+            resDiv.classList.remove('hidden');
+            resDiv.innerText = "Analyzing portfolio structure...";
+
+            const prompt = `Write a 2-sentence motivational investment memo for a client starting a ₹${amt} SIP in India (2026).
+            Strategy: 50% Core (Stability), 30% Small Cap (Alpha).
+            Explain why this captures the "Capex Pivot" while staying safe. Tone: Professional & Encouraging.`;
+
+            const text = await callGemini(prompt);
+            
+            resDiv.innerText = `"${text}"`;
+            btn.innerHTML = '<span>✨</span> Regenerate Investment Memo';
+            btn.disabled = false;
+        }
+
+        // --- Init ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Macro Chart
+            new Chart(document.getElementById('macroChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['FY15', 'FY20', 'FY26 (Est)', 'FY27 (Proj)'],
+                    datasets: [
+                        {
+                            label: 'Govt Capex (Lakh Cr)',
+                            data: [2.0, 4.1, 11.1, 12.2],
+                            backgroundColor: '#f59e0b',
+                            yAxisID: 'y',
+                            order: 2,
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'Fiscal Deficit (%)',
+                            data: [4.1, 4.6, 4.9, 4.3],
+                            borderColor: '#111827',
+                            backgroundColor: '#111827',
+                            type: 'line',
+                            yAxisID: 'y1',
+                            order: 1,
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } },
+                    scales: {
+                        y: { title: { display: true, text: 'Capex (₹ Lakh Cr)' } },
+                        y1: { position: 'right', min: 0, max: 10, title: { display: true, text: 'Deficit (%)' }, grid: { drawOnChartArea: false } }
+                    }
+                }
+            });
+
+            // Valuation Chart
+            new Chart(document.getElementById('valuationChart'), {
+                type: 'line',
+                data: {
+                    labels: ['2021 Peak', '2022', '2023', '2024', '2025', 'Feb 2026'],
+                    datasets: [{
+                        label: 'Nifty Smallcap 250 PE',
+                        data: [48.2, 30.1, 35.0, 29.0, 32.5, 26.2],
+                        borderColor: '#0f766e',
+                        backgroundColor: 'rgba(20, 184, 166, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: ['#0f766e', '#0f766e', '#0f766e', '#0f766e', '#0f766e', '#f59e0b'],
+                        pointRadius: [4, 4, 4, 4, 4, 8]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: false, min: 15 } },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            switchTheme('electronics');
+            calculatePortfolio();
+        });
+    </script>
+</body>
+</html>
